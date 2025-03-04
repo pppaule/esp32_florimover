@@ -137,8 +137,8 @@ void florimoover()
 
   while (1)
   {
-  //   static unsigned long holdTimer = 0;
-  //   static bool pressed_flag = false;
+    static unsigned long holdTimer = 0;
+    static bool pressed_flag = false;
 
   // ui code starts here
      user_loop();
@@ -150,70 +150,72 @@ void florimoover()
    int enc_val = encoder.getValue();
   
   
-  //  if (enc_val > 0)
-    // {
-    //   joystickSpeed += 100;
-    //   if (joystickSpeed > 2000)
-    //     joystickSpeed = 2000;
-    //   joystick.setStepSize(joystickSpeed);
-    //   sprintf(buffer, "%d", joystickSpeed);
-    //   ui_park.draw_alert_window(buffer);
-    //   delay(100);
-    // }
-    // else if (enc_val < 0)
-    // {
-    //   joystickSpeed -= 100;
-    //   if (joystickSpeed < 50)
-    //     joystickSpeed = 50;
-    //   joystick.setStepSize(joystickSpeed);
-    //   sprintf(buffer, "%d", joystickSpeed);
-    //   ui_park.draw_alert_window(buffer);
-    //   delay(100);
-    // }
+   if (enc_val > 0)
+    {
+      // joystickSpeed += 100;
+      // if (joystickSpeed > 2000)
+      //   joystickSpeed = 2000;
+      // joystick.setStepSize(joystickSpeed);
+      // sprintf(buffer, "%d", joystickSpeed);
+      // ui_park.draw_alert_window(buffer);
+      // delay(100);
+    }
+    else if (enc_val < 0)
+    {
+      // joystickSpeed -= 100;
+      // if (joystickSpeed < 50)
+      //   joystickSpeed = 50;
+      // joystick.setStepSize(joystickSpeed);
+      // sprintf(buffer, "%d", joystickSpeed);
+      // ui_park.draw_alert_window(buffer);
+      // delay(100);
+    }
   
-  //   if (encoder.pressed())
-  //   {
-  //     holdTimer = millis();
-  //     pressed_flag = true;
-  //   }
+    if (encoder.pressed())
+    {
+      holdTimer = millis();
+      pressed_flag = true;
+    }
 
   //   // saving routine
 
-  //   if (pressed_flag && encoder.held_longer_then(1500))
-  //   {
-  //   //  go_to_parking_position_and_secure_lamp();
-  //     return ; //0;
-  //   }
+    if (pressed_flag && encoder.held_longer_then(1500))
+    {
+    //  go_to_parking_position_and_secure_lamp();
+    // return ; //0;
+    }
 
-  //   if (encoder.depressed())
-  //   {
-  //     if (!firstRun)
-  //     {
-  //      // menuCntrlPoint_ParkingX.setCurrentValue(parking_position.x);
-  //      // menuCntrlPoint_ParkingY.setCurrentValue(parking_position.y);
+    if (encoder.depressed())
+    {
+      if (!firstRun)
+      {
+       // menuCntrlPoint_ParkingX.setCurrentValue(parking_position.x);
+       // menuCntrlPoint_ParkingY.setCurrentValue(parking_position.y);
         
-  //      //EEPROM.commit();
-  //      // menuMgr.save(0xfade);
+       //EEPROM.commit();
+       // menuMgr.save(0xfade);
         
-   //     ui_park.draw_alert_window("saved");
-   //     ui_park.updateDisplay();
-  //     }
+      // ui_park.draw_alert_window("saved");
+      // ui_park.updateDisplay();
+      }
 
-  //     pressed_flag = false;
-  //     firstRun = false;
-  //   }
-  //   static unsigned long joystickTimer = millis();
+      pressed_flag = false;
+      firstRun = false;
+    }
+    static unsigned long joystickTimer = millis();
 
-  //   if (millis() - joystickTimer > 50)
-  //   {
-  //     joystickValue_x = joystick.getX();
-  //     joystickValue_y = map(joystick.getY(), 4096, 0, 0, 4096); //inversed for optics
-  //     parking_position.x += joystick.getRelativeX(joystick_inversion);
-  //     parking_position.x = constrain(parking_position.x, 0, 65535);
-  //     parking_position.y += joystick.getRelativeY(joystick_inversion);
-  //     parking_position.y = constrain(parking_position.y, 0, 65535);
-  //     // constrain(parking_position.x, 0, 65536);
-  //   }
+    if (millis() - joystickTimer > 50)
+    {
+      joystickValue_x = joystick.getX();
+      joystickValue_y = map(joystick.getY(), 4096, 0, 0, 4096); //inversed for optics
+      parking_position.x += joystick.getRelativeX(joystick_inversion);
+      parking_position.x = constrain(parking_position.x, 0, 65535);
+      parking_position.y += joystick.getRelativeY(joystick_inversion);
+      parking_position.y = constrain(parking_position.y, 0, 65535);
+      
+      constrain(parking_position.x, 0, 65536);
+      constrain(parking_position.y, 0, 65536);
+    }
 
 
   //   // joystick conversion code
@@ -228,19 +230,21 @@ void florimoover()
     char row1[20];
     char row2[20];
     char row3[20];
+    int pan_value =(map(joystick.getX(), 0, 4095, 100, -100));
+    int tilt_value = (map(joystick.getY(), 0, 4095, -100, 100));
     sprintf(row1, "ENCVALUE %5d", enc_val);
-    sprintf(row2, "PAN %5d", parking_position.x);
-    sprintf(row3, "TILT %5d", parking_position.y); 
+    sprintf(row2, "PAN %5d %", pan_value);
+    sprintf(row3, "TILT %5d %", tilt_value); 
     ui_park.draw_txt_in_window(row1, row2, row3);
   
   
   //   ui_park.textloop_in_status_bar_2_items(2000, "hold to exit", "push to save");
 
-  //  if (pressed_flag)
+   if (pressed_flag)
      ui_park.draw_joystickBox(joystickValue_x, joystickValue_y, true);
-   //  else
-   //  ui_park.draw_joystickBox(joystickValue_x, joystickValue_y, false);
-
+    else
+    ui_park.draw_joystickBox(joystickValue_x, joystickValue_y, false);
+  
   ui_park.updateDisplay();
 
   //   // dmx gets looped in user_loop() . B-)
