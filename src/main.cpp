@@ -1,0 +1,245 @@
+
+
+
+// #define OUTPUT_DMX
+// #define OUTPUT_ARTNET
+// #define OUTPUT_BLEMIDI
+// #define OUTPUT_MIDI
+// #define OUTPUT_OSC
+
+#include <Arduino.h>
+#include <U8g2lib.h>
+#include "UserOutput.h"
+#include "input.h"
+//#include <ESP32Encoder.h>
+#include <Bounce2.h>
+#include <Wire.h>
+
+
+#define CLK 4 // CLK ENCODER 
+#define DT 5 // DT ENCODER 
+#define encSwitchPin 15 //SWITCH ENCODER
+#define YELLOW_BUTTON_PIN 23 //YELLOW BUTTON
+#define JOY_X_PIN  32 
+#define JOY_Y_PIN  35 
+
+//goes to fixture struct main
+
+#define dmx_start_address 1;
+#define dmx_pan_offset 1;
+#define dmx_tilt_offset 3;
+
+
+encoderInput encoder(CLK,DT,encSwitchPin);
+Joystick joystick(JOY_X_PIN, JOY_Y_PIN);
+TheButton yellowButton(YELLOW_BUTTON_PIN);
+//**********Joystick defines and variables ***********
+
+
+// bool  INVx;
+// bool  INVy;
+
+//************ encoder defines and variables
+
+
+
+bool inverted;
+bool DMX_inverted;
+bool joystick_inversion;
+/*
+  U8g2lib Example Overview:
+    Frame Buffer Examples: clearBuffer/sendBuffer. Fast, but may not work with all Arduino boards because of RAM consumption
+    Page Buffer Examples: firstPage/nextPage. Less RAM usage, should work with all Arduino boards.
+    U8x8 Text Only Example: No RAM usage, direct communication with display controller. No graphics, 8x8 Text only.
+    
+*/
+U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, U8X8_PIN_NONE, 22, 21);
+
+UserOutput ui_park(u8g2);
+
+
+struct Coordinate
+{
+  bool assigned = false;
+  int x = 0;
+  int y = 0;
+};
+// target setup
+//  targets are xy coordinates of cornerpoints in a clockwise fashion
+//  parking is the safe position to return lamp to.
+
+extern bool joystick_inversion;   // joystick flip flag
+Coordinate parking_position;
+
+
+
+void florimoover();
+
+// this has to be run in loop and during while(1)
+void user_loop() {
+  yellowButton.updateSwitch();
+  encoder.updateSwitch();
+  // #ifdef OUTPUT_DMX
+  //     dmx_loop();
+  // #else
+  //   artnet_loop();
+  // #endif
+} 
+
+void setup(void) {
+  u8g2.begin();
+}
+
+void loop(void) {
+  u8g2.clearBuffer();					// clear the internal memory
+  u8g2.setFont(u8g2_font_ncenB08_tr);	// choose a suitable fontemory
+
+  florimoover();
+
+  u8g2.sendBuffer();					// transfer internal memory to the display
+  delay(1000);  
+}
+
+
+bool firstRun = true;
+
+void florimoover()
+{
+  int textInterval = 2000;
+  unsigned long textTimer = millis() + textInterval;
+  ui_park.init_main_window(10, 5, 108, 46, 3);
+  ui_park.init_joystickBox(85, 14, 42, 42, 6, 12);
+  ui_park.init_status_bar(13, 49, 85, 15, 3);
+  ui_park.clearDisplay();
+  ui_park.draw_txt_in_window("please move", "to parking", "position");
+
+  // parking_position.x = menuCntrlPoint_ParkingX.getCurrentValue();
+  // parking_position.y = menuCntrlPoint_ParkingY.getCurrentValue();
+  
+  // parking position is the last saved position of the fixture
+  
+  parking_position.x = 127;
+  parking_position.y = 127;
+
+  int joystickValue_x = 0;
+  int joystickValue_y = 0;
+  int joystickspeed = 100;
+
+  // has to be saved to eeprom
+
+
+  //joystick.init(menuMotionSetupJoystickSpeed.getCurrentValue());
+  joystick.init(joystickspeed);
+
+  ui_park.init_main_window(10, 5, 108, 46, 3);
+  ui_park.init_joystickBox(85, 14, 42, 42, 6, 12);
+  ui_park.init_status_bar(13, 49, 85, 15, 3);
+
+  while (1)
+  {
+  //   static unsigned long holdTimer = 0;
+  //   static bool pressed_flag = false;
+
+  // ui code starts here
+     user_loop();
+
+   static int joystickSpeed = joystickspeed;
+
+   char buffer[20];
+    int enc_val = encoder.getValOnebyOne();
+  //  if (enc_val > 0)
+    // {
+    //   joystickSpeed += 100;
+    //   if (joystickSpeed > 2000)
+    //     joystickSpeed = 2000;
+    //   joystick.setStepSize(joystickSpeed);
+    //   sprintf(buffer, "%d", joystickSpeed);
+    //   ui_park.draw_alert_window(buffer);
+    //   delay(100);
+    // }
+    // else if (enc_val < 0)
+    // {
+    //   joystickSpeed -= 100;
+    //   if (joystickSpeed < 50)
+    //     joystickSpeed = 50;
+    //   joystick.setStepSize(joystickSpeed);
+    //   sprintf(buffer, "%d", joystickSpeed);
+    //   ui_park.draw_alert_window(buffer);
+    //   delay(100);
+    // }
+  
+  //   if (encoder.pressed())
+  //   {
+  //     holdTimer = millis();
+  //     pressed_flag = true;
+  //   }
+
+  //   // saving routine
+
+  //   if (pressed_flag && encoder.held_longer_then(1500))
+  //   {
+  //   //  go_to_parking_position_and_secure_lamp();
+  //     return ; //0;
+  //   }
+
+  //   if (encoder.depressed())
+  //   {
+  //     if (!firstRun)
+  //     {
+  //      // menuCntrlPoint_ParkingX.setCurrentValue(parking_position.x);
+  //      // menuCntrlPoint_ParkingY.setCurrentValue(parking_position.y);
+        
+  //      //EEPROM.commit();
+  //      // menuMgr.save(0xfade);
+        
+   //     ui_park.draw_alert_window("saved");
+   //     ui_park.updateDisplay();
+  //     }
+
+  //     pressed_flag = false;
+  //     firstRun = false;
+  //   }
+  //   static unsigned long joystickTimer = millis();
+
+  //   if (millis() - joystickTimer > 50)
+  //   {
+  //     joystickValue_x = joystick.getX();
+  //     joystickValue_y = map(joystick.getY(), 4096, 0, 0, 4096); //inversed for optics
+  //     parking_position.x += joystick.getRelativeX(joystick_inversion);
+  //     parking_position.x = constrain(parking_position.x, 0, 65535);
+  //     parking_position.y += joystick.getRelativeY(joystick_inversion);
+  //     parking_position.y = constrain(parking_position.y, 0, 65535);
+  //     // constrain(parking_position.x, 0, 65536);
+  //   }
+
+
+  //   // joystick conversion code
+  //   int dmx_x_ch = dmx_start_address + dmx_pan_offset;
+  //   int dmx_y_ch = dmx_start_address + dmx_tilt_offset;
+
+  //   // dmx_value[dmx_x_ch] = (byte)(parking_position.x >> 8) & 0xFF; // highbyte
+  //   // dmx_value[dmx_x_ch + 1] = (byte)parking_position.x & 0xFF;    // lowbyte
+  //   // dmx_value[dmx_y_ch] = (byte)(parking_position.y >> 8) & 0xFF; // highbyte
+  //   // dmx_value[dmx_y_ch + 1] = (byte)parking_position.y & 0xFF;    // lowbyte
+
+    char row1[20];
+    char row2[20];
+    char row3[20];
+    sprintf(row1, "PAN SPEED %d", joystickspeed);
+    sprintf(row2, "PAN %5d", parking_position.x);
+    sprintf(row3, "TILT %5d", parking_position.y); 
+    ui_park.draw_txt_in_window(row1, row2, row3);
+  
+  
+  //   ui_park.textloop_in_status_bar_2_items(2000, "hold to exit", "push to save");
+
+  //  if (pressed_flag)
+     ui_park.draw_joystickBox(joystickValue_x, joystickValue_y, true);
+   //  else
+   //  ui_park.draw_joystickBox(joystickValue_x, joystickValue_y, false);
+
+  ui_park.updateDisplay();
+
+  //   // dmx gets looped in user_loop() . B-)
+  }
+}
