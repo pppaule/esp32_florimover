@@ -11,8 +11,6 @@
 #include <U8g2lib.h>
 #include "UserOutput.h"
 #include "input.h"
-//#include <ESP32Encoder.h>
-#include <Bounce2.h>
 #include <Wire.h>
 
 
@@ -88,6 +86,7 @@ void user_loop() {
 
 void setup(void) {
   u8g2.begin();
+  encoder.init();
 }
 
 void loop(void) {
@@ -105,6 +104,7 @@ bool firstRun = true;
 
 void florimoover()
 {
+  encoder.init();
   int textInterval = 2000;
   unsigned long textTimer = millis() + textInterval;
   ui_park.init_main_window(10, 5, 108, 46, 3);
@@ -146,7 +146,10 @@ void florimoover()
    static int joystickSpeed = joystickspeed;
 
    char buffer[20];
-    int enc_val = encoder.getValOnebyOne();
+   //int enc_val = encoder.getValOnebyOne();
+   int enc_val = encoder.getValue();
+  
+  
   //  if (enc_val > 0)
     // {
     //   joystickSpeed += 100;
@@ -225,7 +228,7 @@ void florimoover()
     char row1[20];
     char row2[20];
     char row3[20];
-    sprintf(row1, "PAN SPEED %d", joystickspeed);
+    sprintf(row1, "ENCVALUE %5d", enc_val);
     sprintf(row2, "PAN %5d", parking_position.x);
     sprintf(row3, "TILT %5d", parking_position.y); 
     ui_park.draw_txt_in_window(row1, row2, row3);
