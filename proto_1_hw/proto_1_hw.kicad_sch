@@ -3087,12 +3087,6 @@
 		(uuid "c83015ed-1fca-40cf-be1c-df0f6b0cab19")
 	)
 	(junction
-		(at 20.32 64.77)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "cf32f543-32e6-41be-a6a9-6016ab108f03")
-	)
-	(junction
 		(at 227.33 105.41)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -3640,6 +3634,16 @@
 	)
 	(wire
 		(pts
+			(xy 26.67 48.895) (xy 26.67 52.07)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5f96cbd9-3299-40fc-9fa5-659fc016997f")
+	)
+	(wire
+		(pts
 			(xy 234.95 149.86) (xy 243.84 149.86)
 		)
 		(stroke
@@ -3940,16 +3944,6 @@
 	)
 	(wire
 		(pts
-			(xy 20.32 52.07) (xy 20.32 64.77)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "85374c38-dbbb-4142-bab9-f0a785dc97df")
-	)
-	(wire
-		(pts
 			(xy 269.24 109.22) (xy 269.24 111.76)
 		)
 		(stroke
@@ -4060,7 +4054,7 @@
 	)
 	(wire
 		(pts
-			(xy 35.56 52.07) (xy 20.32 52.07)
+			(xy 35.56 52.07) (xy 26.67 52.07)
 		)
 		(stroke
 			(width 0)
@@ -6258,6 +6252,72 @@
 		)
 	)
 	(symbol
+		(lib_id "power:+3.3V")
+		(at 26.67 41.275 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "55844c68-c940-4dbd-a278-854a62246a00")
+		(property "Reference" "#PWR020"
+			(at 26.67 45.085 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3.3V"
+			(at 26.67 36.195 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 26.67 41.275 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 26.67 41.275 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3.3V\""
+			(at 26.67 41.275 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "f46a3175-272a-4216-a0d9-70b7b2fefe17")
+		)
+		(instances
+			(project "proto_1_hw"
+				(path "/876d6262-7d8c-44cb-9c9c-014511423868"
+					(reference "#PWR020")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Device:R_Small")
 		(at 224.79 86.36 90)
 		(unit 1)
@@ -6811,6 +6871,76 @@
 			(project ""
 				(path "/876d6262-7d8c-44cb-9c9c-014511423868"
 					(reference "A1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 26.67 45.085 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "7dfff3fc-575c-488f-8048-d45d733ea4f1")
+		(property "Reference" "C2"
+			(at 30.48 43.8149 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "C"
+			(at 30.48 46.3549 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 27.6352 48.895 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 26.67 45.085 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor"
+			(at 26.67 45.085 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "21ab46cc-f508-4f0c-a8fc-ea4fca566e86")
+		)
+		(pin "1"
+			(uuid "131bedcc-df76-41d1-a57f-b26fb7d4b178")
+		)
+		(instances
+			(project ""
+				(path "/876d6262-7d8c-44cb-9c9c-014511423868"
+					(reference "C2")
 					(unit 1)
 				)
 			)
