@@ -51,6 +51,76 @@ public:
         isPressed = false; // Initial state is "not pressed"
     }
 
+
+// Enum to define the possible states for an LED
+enum LedState {
+    LED_STATE_NON_PRESSED,  // 10% duty cycle
+    LED_STATE_PRESSED,      // 60% duty cycle
+    LED_STATE_FIXED,        // 60% duty cycle, constant on
+    LED_STATE_BLINKING      // 60% duty cycle, 0.5 sec on/off interval
+};
+
+// Led Class: Manages the state and behavior of a single LED
+class Led {
+public:
+    uint8_t pin;             // The microcontroller pin connected to the LED
+    LedState state;          // Current state of the LED
+    unsigned long lastBlinkTime; // Stores the last time the LED state changed for blinking
+    bool blinkOn;            // True if LED should be on during blinking cycle
+    const unsigned long BLINK_INTERVAL_MS = 500; // Blinking interval in milliseconds
+
+    // Constructor: Initializes the LED pin and sets initial state
+    Led(uint8_t ledPin) : pin(ledPin), state(LED_STATE_NON_PRESSED), lastBlinkTime(0), blinkOn(true) {
+        pinMode(pin, OUTPUT); // Configure the pin as an output
+        analogWrite(pin, 0);  // Ensure LED is off initially
+    }
+
+    // Sets the new state for the LED
+    void setState(LedState newState) {
+        if (state != newState) { // Only update if the state has changed
+            state = newState;
+            // Reset blinking state if changing to a non-blinking state or new blinking state
+            if (state != LED_STATE_BLINKING) {
+                analogWrite(pin, 0); // Turn off before setting new state if not blinking
+            }
+            lastBlinkTime = millis(); // Reset timer for blinking
+            blinkOn = true; // Start blinking cycle with LED on
+        }
+    }
+
+    // Updates the LED's brightness or blinking state based on its current state
+    void update() {
+        int dutyCycle = 0;
+        switch (state) {
+            case LED_STATE_NON_PRESSED:
+                dutyCycle = (int)(255 * 0.10); // 10% duty cycle
+                analogWrite(pin, dutyCycle);
+                break;
+            case LED_STATE_PRESSED:
+                dutyCycle = (int)(255 * 0.60); // 60% duty cycle
+                analogWrite(pin, dutyCycle);
+                break;
+            case LED_STATE_FIXED:
+                dutyCycle = (int)(255 * 0.60); // 60% duty cycle, constant on
+                analogWrite(pin, dutyCycle);
+                break;
+            case LED_STATE_BLINKING:
+                // Check if it's time to toggle the LED for blinking
+                if (millis() - lastBlinkTime >= BLINK_INTERVAL_MS) {
+                    blinkOn = !blinkOn; // Toggle blink state
+                    lastBlinkTime = millis(); // Reset blink timer
+                }
+                dutyCycle = blinkOn ? (int)(255 * 0.60) : 0; // 60% on, 0% off
+                analogWrite(pin, dutyCycle);
+                break;
+        }
+    }
+};
+
+Led* leds[NUM_BUTTONS]; // Array to store Led objects, one for each button
+
+
+
     // Method to draw the button on the display
     void draw() {
         // Fill background based on state
@@ -169,9 +239,23 @@ void setup() {
     for (int i = 0; i < NUM_BUTTONS; i++) {
         buttons[i]->draw();
     }
+    // --- Initialize LEDs ---
+    uint8_t ledPins[NUM_BUTTONS] = {12, 13, A0, A1, A2, A3, A4, A5};
+
+    // Initialize Led objects, associating them with their respective pins
+    for (int i = 0; i < NUM_BUTTONS; i++) {
+        leds[i] = new Led(ledPins[i]);
+    }
 }
 
-// --- Loop Function ---
+
+    // Example of how to manually set LED states (e.g., for fixed or blinking modes)
+    // This is for demonstration. You would integrate this into your application logic.
+    // For instance, pressing another button could cycle through these modes for a specific LED.
+    // leds[0]->setState(LED_STATE_FIXED);    // Set LED 0 to fixed 60% brightness
+    // leds[1]->setState(LED_STATE_BLINKING); // Set LED 1 to blinking
+  
+
 void loop() {
     // Loop through all defined buttons
     for (int i = 0; i < NUM_BUTTONS; i++) {
@@ -188,4 +272,10 @@ void loop() {
     // and avoid unnecessary CPU load.
     // For more robust debouncing, a timer-based solution is recommended.
     delay(50);
+    // Update all LEDs based on their current state (handles blinking, PWM, etc.)
+    for (int i = 0; i < NUM_BUTTONS; i++) {
+        if (leds[i] != nullptr) { // Ensure the LED object exists
+            leds[i]->update();
+        }
+    }
 }
